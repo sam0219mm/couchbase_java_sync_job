@@ -17,28 +17,42 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.couchbase.lite.DataSource;
+import com.couchbase.lite.Dictionary;
+import com.couchbase.lite.Database;
+import com.couchbase.lite.Meta;
+import com.couchbase.lite.Query;
+import com.couchbase.lite.QueryBuilder;
 import com.couchbase.userprofile.profile.UserProfileActivity;
 import com.couchbase.userprofile.profile.UserProfileContract;
+import com.couchbase.userprofile.profile.UserProfilePresenter;
+import com.couchbase.userprofile.util.DatabaseManager;
+import com.couchbase.lite.QueryChange;
+import com.couchbase.lite.QueryChangeListener;
+import com.couchbase.lite.Result;
+import com.couchbase.lite.ResultSet;
+import com.couchbase.lite.SelectResult;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
-public class Task_List extends AppCompatActivity {
+public class Task_List extends AppCompatActivity implements UserProfileContract.View {
 
     private  ArrayList<HashMap<String,String>> arrayList = new ArrayList<>();
     RecyclerView RecyclerView_Task;
     ListAdapter ListAdapter;
 
-    private UserProfileContract.UserActionsListener ActionListener;
-
+    private UserProfileContract.UserActionsListener presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_list);
-       // Intent intent = getIntent();
+      //  Intent intent = getIntent();
      //   Map<String, Object> profile_data = (Map<String, Object>) getIntent().getSerializableExtra("profile_data");
         arrayList = (ArrayList<HashMap<String, String>>) getIntent().getSerializableExtra("arrayList");
         RecyclerView_Task = findViewById(R.id.recycleview1);
@@ -46,10 +60,34 @@ public class Task_List extends AppCompatActivity {
         RecyclerView_Task.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         ListAdapter = new ListAdapter();
         RecyclerView_Task.setAdapter(ListAdapter);
+
+        // 建立 UserProfilePresenter
+        this.presenter = new UserProfilePresenter(this);
+        this.presenter.fetchProfile();
     }
 
 
+    /////
+    public void showProfile(Map<String, Object> profile) {
+        // 將 profile 轉換為 arrayList，然後更新 RecyclerView 的數據
+        List<Map<String, Object>> jobList = (List<Map<String, Object>>) profile.get("job");
+        arrayList.clear();
+        for (Map<String, Object> job : jobList) {
+            HashMap<String, String> jobMap = new HashMap<>();
+            jobMap.put("Id", (String) job.get("Id"));
+            jobMap.put("TaskID", (String) job.get("TaskID"));
+            jobMap.put("Type", (String) job.get("Type"));
+            jobMap.put("Status", (String) job.get("Status"));
+            arrayList.add(jobMap);
+        }
+        // 刷新 RecyclerView
+        ListAdapter.notifyDataSetChanged();
+    }
+    public void makeData(Map<String, Object> profile) {
+        // 暫時忽略這個方法
+    }
 
+/////
 
     //////////////////
     private class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder>{

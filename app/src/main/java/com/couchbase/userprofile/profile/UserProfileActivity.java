@@ -169,10 +169,7 @@ public class UserProfileActivity
         profile.put("university", universityText.getText().toString());
         profile.put("type", "user");
         byte[] imageViewBytes = getImageViewBytes();
-
         //////////
-
-
         List<Map<String, String>> jobs = new ArrayList<>();
         MyListAdapter adapter = (MyListAdapter) mRecyclerView.getAdapter();
         for (int i = 0; i < adapter.getItemCount(); i++) {
@@ -188,8 +185,6 @@ public class UserProfileActivity
         profile.put("jobs", jobs);
 
         /////////
-
-
         if (imageViewBytes != null) {
             profile.put("imageData", new com.couchbase.lite.Blob("image/jpeg", imageViewBytes));
         }
@@ -273,6 +268,7 @@ public class UserProfileActivity
 //        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 //        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 //        myListAdapter = new MyListAdapter();
+
         mRecyclerView.setAdapter(myListAdapter);
 
     }
