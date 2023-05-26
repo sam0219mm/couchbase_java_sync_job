@@ -69,7 +69,6 @@ public class UserProfileActivity
     private  ArrayList<HashMap<String,String>> arrayList = new ArrayList<>();
     SwipeRefreshLayout swipeRefreshLayout;
 
-    private Map<String, Object> profile_data = new HashMap<>();
 ///////////////////////////////
 
     ActivityResultLauncher<Intent> mainActivityResultLauncher = registerForActivityResult(
@@ -169,22 +168,10 @@ public class UserProfileActivity
         profile.put("university", universityText.getText().toString());
         profile.put("type", "user");
         byte[] imageViewBytes = getImageViewBytes();
-        //////////
-        List<Map<String, String>> jobs = new ArrayList<>();
-        MyListAdapter adapter = (MyListAdapter) mRecyclerView.getAdapter();
-        for (int i = 0; i < adapter.getItemCount(); i++) {
-            MyListAdapter.ViewHolder viewHolder = (MyListAdapter.ViewHolder) adapter.createViewHolder(mRecyclerView, adapter.getItemViewType(i));
-            adapter.bindViewHolder(viewHolder, i);
-            Map<String, String> task = new HashMap<>();
-            task.put("Task", viewHolder.Task.getText().toString());
-            task.put("Type", viewHolder.Type.getText().toString());
-            task.put("Status", viewHolder.Status.getText().toString());
-            jobs.add(task);
-        }
-// 將 tasks 存入 profile Map 中
-        profile.put("jobs", jobs);
 
-        /////////
+        profile.put("jobs", arrayList);
+
+
         if (imageViewBytes != null) {
             profile.put("imageData", new com.couchbase.lite.Blob("image/jpeg", imageViewBytes));
         }
@@ -199,7 +186,6 @@ public class UserProfileActivity
     //////
     public void Task_Tapped(View view) {
         Intent intent = new Intent(UserProfileActivity.this, Task_List.class);
-     //   intent.putExtra("profile_data", (Serializable) profile_data);
         intent.putExtra("arrayList", arrayList);
         startActivity(intent);
 
@@ -234,6 +220,19 @@ public class UserProfileActivity
 
         String university = (String)profile.get("university");
 
+        List<Map<String, Object>> jobList = (List<Map<String, Object>>) profile.get("jobs");
+        arrayList.clear();
+        int i = 0;
+        for (Map<String, Object> job : jobList) {
+            HashMap<String, String> jobMap = new HashMap<>();
+ //           jobMap.put("Id","JOB："+String.format("%02d",i+1));
+            jobMap.put("TaskID", (String) job.get("TaskID"));
+            jobMap.put("Type", (String) job.get("Type"));
+            jobMap.put("Status", (String) job.get("Status"));
+            arrayList.add(jobMap);
+            i=i+1;
+        }
+
         if (university != null && !university.isEmpty()) {
             universityText.setText(university);
         }
@@ -250,20 +249,19 @@ public class UserProfileActivity
     @Override
     public void makeData(Map<String, Object> profile) {
 
-        profile_data=profile;
 
-        List<Map<String, Object>> jobList = (List<Map<String, Object>>) profile.get("job");
-        arrayList.clear();
-        int i = 0;
-        for (Map<String, Object> job : jobList) {
-            HashMap<String, String> jobMap = new HashMap<>();
-            jobMap.put("Id","JOB："+String.format("%02d",i+1));
-            jobMap.put("TaskID", (String) job.get("TaskID"));
-            jobMap.put("Type", (String) job.get("Type"));
-            jobMap.put("Status", (String) job.get("Status"));
-            arrayList.add(jobMap);
-            i=i+1;
-        }
+//        List<Map<String, Object>> jobList = (List<Map<String, Object>>) profile.get("job");
+//        arrayList.clear();
+//        int i = 0;
+//        for (Map<String, Object> job : jobList) {
+//            HashMap<String, String> jobMap = new HashMap<>();
+//            jobMap.put("Id","JOB："+String.format("%02d",i+1));
+//            jobMap.put("TaskID", (String) job.get("TaskID"));
+//            jobMap.put("Type", (String) job.get("Type"));
+//            jobMap.put("Status", (String) job.get("Status"));
+//            arrayList.add(jobMap);
+//            i=i+1;
+//        }
 //        mRecyclerView = findViewById(R.id.recycleview);
 //        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 //        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));

@@ -81,7 +81,7 @@ public class UserProfilePresenter implements UserProfileContract.UserActionsList
                             jobMap.put("Status", jobDict.getString("Status"));
                             jobList.add(jobMap);
                         }
-                        profile.put("job", jobList);
+                        profile.put("jobs", jobList);
                         //////////////
                     }
                 }

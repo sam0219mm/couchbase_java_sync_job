@@ -47,6 +47,7 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
     ListAdapter ListAdapter;
 
     private UserProfileContract.UserActionsListener presenter;
+    private Map<String, Object> profile_data = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,8 +70,10 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
 
     /////
     public void showProfile(Map<String, Object> profile) {
+
+        profile_data=profile;
         // 將 profile 轉換為 arrayList，然後更新 RecyclerView 的數據
-        List<Map<String, Object>> jobList = (List<Map<String, Object>>) profile.get("job");
+        List<Map<String, Object>> jobList = (List<Map<String, Object>>) profile.get("jobs");
         arrayList.clear();
         for (Map<String, Object> job : jobList) {
             HashMap<String, String> jobMap = new HashMap<>();
@@ -83,11 +86,51 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
         // 刷新 RecyclerView
         ListAdapter.notifyDataSetChanged();
     }
+
+    public void onSaveTapped_task(View view) {
+
+        profile_data.remove("jobs");
+        // 收集當前的 job status
+        List<Map<String, String>> current_jobs = new ArrayList<>();
+        ListAdapter adapter = (ListAdapter) RecyclerView_Task.getAdapter();
+        for (int i = 0; i < adapter.getItemCount(); i++) {
+            ListAdapter.ViewHolder viewHolder = (ListAdapter.ViewHolder) adapter.createViewHolder(RecyclerView_Task, adapter.getItemViewType(i));
+            adapter.bindViewHolder(viewHolder, i);
+            Map<String, String> task = new HashMap<>();
+            task.put("Task", viewHolder.Task.getText().toString());
+            task.put("Type", viewHolder.Type.getText().toString());
+            task.put("Status", viewHolder.Status.getText().toString());
+            current_jobs.add(task);
+        }
+        profile_data.put("jobs", current_jobs);
+
+        presenter.saveProfile(profile_data);
+        Toast.makeText(this, "Successfully updated profile!", Toast.LENGTH_SHORT).show();
+
+        // 更新 UserProfilePresenter 中的 profile
+//        UserProfilePresenter userProfilePresenter = new UserProfilePresenter(this);
+//        userProfilePresenter.saveProfile(current_jobs);
+    }
+
+
+
     public void makeData(Map<String, Object> profile) {
         // 暫時忽略這個方法
     }
 
-/////
+/////List<Map<String, String>> jobs = new ArrayList<>();
+//        MyListAdapter adapter = (MyListAdapter) mRecyclerView.getAdapter();
+//        for (int i = 0; i < adapter.getItemCount(); i++) {
+//            MyListAdapter.ViewHolder viewHolder = (MyListAdapter.ViewHolder) adapter.createViewHolder(mRecyclerView, adapter.getItemViewType(i));
+//            adapter.bindViewHolder(viewHolder, i);
+//            Map<String, String> task = new HashMap<>();
+//            task.put("Task", viewHolder.Task.getText().toString());
+//            task.put("Type", viewHolder.Type.getText().toString());
+//            task.put("Status", viewHolder.Status.getText().toString());
+//            jobs.add(task);
+//        }
+
+
 
     //////////////////
     private class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder>{
@@ -139,9 +182,8 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
         public int getItemCount() {
             return arrayList.size();
         }
-
-
     }
+
     public class MyTextWatcher implements TextWatcher {
         private RecyclerView.ViewHolder viewHolder;
         private String type;
