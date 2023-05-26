@@ -65,6 +65,9 @@ public class UserProfilePresenter implements UserProfileContract.UserActionsList
                         profile.put("imageData", dictionary.getBlob("imageData")); // <4>
                         profile.put("university", dictionary.getString("university")); // <4>
                         profile.put("type", dictionary.getString("type")); // <4>
+                        profile.put("Phone", dictionary.getString("Phone"));
+                        profile.put("department", dictionary.getString("department"));
+
 
                         ///////////////
                         // Get the "job" array from the document
@@ -76,9 +79,11 @@ public class UserProfilePresenter implements UserProfileContract.UserActionsList
                             Dictionary jobDict = jobArray.getDictionary(i);
                             Map<String, Object> jobMap = new HashMap<>();
                             jobMap.put("Id","JOB："+String.format("%02d",i+1));
-                            jobMap.put("TaskID", jobDict.getString("Task"));
+                            jobMap.put("Task", jobDict.getString("Task"));
+                            jobMap.put("Address", jobDict.getString("Address"));
                             jobMap.put("Type", jobDict.getString("Type"));
                             jobMap.put("Status", jobDict.getString("Status"));
+                            jobMap.put("Create_time", jobDict.getString("Create_time"));
                             jobList.add(jobMap);
                         }
                         profile.put("jobs", jobList);
@@ -86,9 +91,6 @@ public class UserProfilePresenter implements UserProfileContract.UserActionsList
                     }
                 }
 
-                //
-              mUserProfileView.makeData(profile);
-                //
                 mUserProfileView.showProfile(profile);
 
             }

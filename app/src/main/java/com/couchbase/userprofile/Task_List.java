@@ -78,8 +78,10 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
         for (Map<String, Object> job : jobList) {
             HashMap<String, String> jobMap = new HashMap<>();
             jobMap.put("Id", (String) job.get("Id"));
-            jobMap.put("TaskID", (String) job.get("TaskID"));
+            jobMap.put("Task", (String) job.get("Task"));
+            jobMap.put("Create_time", (String) job.get("Create_time"));
             jobMap.put("Type", (String) job.get("Type"));
+            jobMap.put("Address", (String) job.get("Address"));
             jobMap.put("Status", (String) job.get("Status"));
             arrayList.add(jobMap);
         }
@@ -98,7 +100,9 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
             adapter.bindViewHolder(viewHolder, i);
             Map<String, String> task = new HashMap<>();
             task.put("Task", viewHolder.Task.getText().toString());
+            task.put("Create_time", viewHolder.Create_time.getText().toString());
             task.put("Type", viewHolder.Type.getText().toString());
+            task.put("Address", viewHolder.Address.getText().toString());
             task.put("Status", viewHolder.Status.getText().toString());
             current_jobs.add(task);
         }
@@ -114,9 +118,7 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
 
 
 
-    public void makeData(Map<String, Object> profile) {
-        // 暫時忽略這個方法
-    }
+
 
 /////List<Map<String, String>> jobs = new ArrayList<>();
 //        MyListAdapter adapter = (MyListAdapter) mRecyclerView.getAdapter();
@@ -136,15 +138,17 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
     private class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder>{
 
         class ViewHolder extends RecyclerView.ViewHolder{
-            public TextView tvId,Task,Type,Status;
+            public TextView tvId,Task,Type,Status,Address,Create_time;
             private View mView;
 
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
                 tvId = itemView.findViewById(R.id.textView_Id);
                 Task = itemView.findViewById(R.id.Task_V);
+                Create_time = itemView.findViewById(R.id.Create_time);
                 Type = itemView.findViewById(R.id.Type_V);
                 Status  = itemView.findViewById(R.id.status_V1);
+                Address = itemView.findViewById(R.id.address_V);
                 mView  = itemView;
 
             }
@@ -161,8 +165,10 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
             // int avgS = Integer.parseInt(arrayList.get(position).get("Avg"));
 
             holder.tvId.setText(arrayList.get(position).get("Id"));
-            holder.Task.setText(arrayList.get(position).get("TaskID"));
+            holder.Task.setText(arrayList.get(position).get("Task"));
+            holder.Create_time.setText(arrayList.get(position).get("Create_time"));
             holder.Type.setText(arrayList.get(position).get("Type"));
+            holder.Address.setText(arrayList.get(position).get("Address"));
             holder.Status.setText(arrayList.get(position).get("Status"));
 
             holder.mView.setOnClickListener((v)->{
@@ -170,8 +176,10 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
             });
 
             MyTextWatcher watcher = new MyTextWatcher(holder);
-            watcher.setTask(arrayList.get(position).get("TaskID"));
+            watcher.setTask(arrayList.get(position).get("Task"));
+            watcher.setCreate_time(arrayList.get(position).get("Create_time"));
             watcher.setType(arrayList.get(position).get("Type"));
+            watcher.setAddress(arrayList.get(position).get("Address"));
             watcher.setStatus(arrayList.get(position).get("Status"));
 
             holder.Status.addTextChangedListener(watcher);
@@ -189,6 +197,8 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
         private String type;
         private String task;
         private String status;
+        private String Address;
+        private String Create_time;
 
         public MyTextWatcher(RecyclerView.ViewHolder viewHolder) {
             this.viewHolder = viewHolder;
@@ -202,8 +212,16 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
             this.task = task;
         }
 
+        public void setCreate_time(String Create_time) {
+            this.Create_time = Create_time;
+        }
+
         public void setStatus(String status) {
             this.status = status;
+        }
+
+        public void setAddress(String Address) {
+            this.Address = Address;
         }
 
         @Override
@@ -218,7 +236,9 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
             // 更新 task 中的數據
             Map<String, String> taskMap = arrayList.get(viewHolder.getAdapterPosition());
             taskMap.put("Type", type);
-            taskMap.put("TaskID", task);
+            taskMap.put("Task", task);
+            taskMap.put("Create_time", Create_time);
+            taskMap.put("Address", Address);
             taskMap.put("Status", newStatus);
         }
 

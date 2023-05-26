@@ -84,44 +84,45 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="5dp"
-                        android:text="Address:"
-                        android:textColor="@color/black" />
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:padding="5dp"-->
+<!--                        android:text="Address:"-->
+<!--                        android:textColor="@color/black" />-->
 
-                    <EditText
-                        android:id="@+id/addressInput"
-                        android:layout_width="200dp"
-                        android:layout_height="wrap_content"
-                        android:padding="5dp" />
+<!--                    <EditText-->
+<!--                        android:id="@+id/addressInput"-->
+<!--                        android:layout_width="200dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:padding="5dp" />-->
                 </TableRow>
 
-                <TableRow>
+<!--                <TableRow>-->
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="5dp"
-                        android:text="University:"
-                        android:textColor="@color/black" />
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:padding="5dp"-->
+<!--                        android:text="University:"-->
+<!--                        android:textColor="@color/black" />-->
 
-                    <TextView
-                        android:id="@+id/universityText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:onClick="onUniversityTapped"
-                        android:padding="5dp"
-                        android:text="Select University"
-                        android:textColor="@color/design_default_color_primary" />
-                </TableRow>
+<!--                    <TextView-->
+<!--                        android:id="@+id/universityText"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:onClick="onUniversityTapped"-->
+<!--                        android:padding="5dp"-->
+<!--                        android:text="Select University"-->
+<!--                        android:textColor="@color/design_default_color_primary" />-->
+<!--                </TableRow>-->
             </TableLayout>
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
+                android:layout_marginTop="30dp"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -129,28 +130,13 @@
                     android:id="@+id/button_task"
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
-                    android:text="Task"
+                    android:text="任務清單"
                     android:onClick="Task_Tapped"
+                    android:textColor="@color/white"
+                    android:backgroundTint="@color/blue_RURI"
                     android:textSize="20sp" />
             </LinearLayout>
 
-            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                android:id="@+id/refreshLayout"
-                android:layout_width="match_parent"
-                android:layout_height="152dp"
-
-                app:layout_constraintStart_toStartOf="parent">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycleview"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -168,13 +154,15 @@
                     android:text="Log out"
                     android:textColor="@color/white" />
 
-                <Button
-                    android:id="@+id/saveButton"
-                    android:layout_width="125dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:onClick="onSaveTapped"
-                    android:text="Save" />
+                <!--                <Button-->
+                <!--                    android:id="@+id/saveButton"-->
+                <!--                    android:layout_width="125dp"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_gravity="right"-->
+                <!--                    android:backgroundTint="@color/colorPrimary"-->
+                <!--                    android:textColor="@color/white"-->
+                <!--                    android:onClick="onSaveTapped"-->
+                <!--                    android:text="Save" />-->
 
             </LinearLayout>
         </LinearLayout>

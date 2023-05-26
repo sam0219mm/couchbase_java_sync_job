@@ -60,12 +60,12 @@ public class UserProfileActivity
     EditText nameInput;
     EditText emailInput;
     EditText addressInput;
-    TextView universityText;
+   // TextView universityText;
     ImageView imageView;
 
     //////////////////////////
-     RecyclerView mRecyclerView;
-    MyListAdapter myListAdapter;
+    private Map<String, Object> profile_data = new HashMap<>();
+
     private  ArrayList<HashMap<String,String>> arrayList = new ArrayList<>();
     SwipeRefreshLayout swipeRefreshLayout;
 
@@ -80,11 +80,11 @@ public class UserProfileActivity
                     Intent data = result.getData();
                     switch (resultCode)
                     {
-                        case PICK_UNIVERSITY:
-                        {
-                            universityText.setText(data.getStringExtra("result"));
-                        }
-                        break;
+//                        case PICK_UNIVERSITY:
+//                        {
+//                            universityText.setText(data.getStringExtra("result"));
+//                        }
+//                        break;
                         default:
                         {
                             if (data != null) {
@@ -111,21 +111,12 @@ public class UserProfileActivity
 
         nameInput = findViewById(R.id.nameInput);
         emailInput = findViewById(R.id.emailInput);
-        addressInput = findViewById(R.id.addressInput);
-        universityText = findViewById(R.id.universityText);
+     //   addressInput = findViewById(R.id.addressInput);
+     //   universityText = findViewById(R.id.universityText);
         imageView = findViewById(R.id.imageView);
 
         mActionListener = new UserProfilePresenter(this);
 
-        //////////////////////////
-
-
-        mRecyclerView = findViewById(R.id.recycleview);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-        myListAdapter = new MyListAdapter();
-
-         ////////////////////////////
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -144,11 +135,11 @@ public class UserProfileActivity
         mainActivityResultLauncher.launch(Intent.createChooser(intent, "Select Picture"));
     }
 
-    public void onUniversityTapped(View view) {
-        Intent intent = new Intent(getApplicationContext(), UniversitiesActivity.class);
-        intent.setAction(Intent.ACTION_PICK);
-        mainActivityResultLauncher.launch(intent);
-    }
+//    public void onUniversityTapped(View view) {
+//        Intent intent = new Intent(getApplicationContext(), UniversitiesActivity.class);
+//        intent.setAction(Intent.ACTION_PICK);
+//        mainActivityResultLauncher.launch(intent);
+//    }
 
     public void onLogoutTapped(View view) {
         DatabaseManager.stopAllReplicationForCurrentUser();
@@ -159,28 +150,29 @@ public class UserProfileActivity
         startActivity(intent);
     }
 
-    public void onSaveTapped(View view) {
-        // tag::userprofile[]
-        Map<String, Object> profile = new HashMap<>();
-        profile.put("name", nameInput.getText().toString());
-        profile.put("email", emailInput.getText().toString());
-        profile.put("address", addressInput.getText().toString());
-        profile.put("university", universityText.getText().toString());
-        profile.put("type", "user");
-        byte[] imageViewBytes = getImageViewBytes();
-
-        profile.put("jobs", arrayList);
-
-
-        if (imageViewBytes != null) {
-            profile.put("imageData", new com.couchbase.lite.Blob("image/jpeg", imageViewBytes));
-        }
-        // end::userprofile[]
-
-        mActionListener.saveProfile(profile);
-
-        Toast.makeText(this, "Successfully updated profile!", Toast.LENGTH_SHORT).show();
-    }
+//    public void onSaveTapped(View view) {
+//        // tag::userprofile[]
+//        profile_data.remove("jobs");
+//        Map<String, Object> profile = new HashMap<>();
+//        profile.put("name", nameInput.getText().toString());
+//        profile.put("email", emailInput.getText().toString());
+//        profile.put("address", addressInput.getText().toString());
+//        profile.put("university", universityText.getText().toString());
+//        profile.put("type", "user");
+//        byte[] imageViewBytes = getImageViewBytes();
+//
+//        profile.put("jobs", arrayList);
+//
+//
+//        if (imageViewBytes != null) {
+//            profile.put("imageData", new com.couchbase.lite.Blob("image/jpeg", imageViewBytes));
+//        }
+//        // end::userprofile[]
+//
+//        mActionListener.saveProfile(profile);
+//
+//        Toast.makeText(this, "Successfully updated profile!", Toast.LENGTH_SHORT).show();
+//    }
 
 
     //////
@@ -214,11 +206,12 @@ public class UserProfileActivity
 
     @Override
     public void showProfile(Map<String, Object> profile) {
+        profile_data=profile;
         nameInput.setText((String)profile.get("name"));
         emailInput.setText((String)profile.get("email"));
-        addressInput.setText((String)profile.get("address"));
+ //       addressInput.setText((String)profile.get("address"));
 
-        String university = (String)profile.get("university");
+//        String university = (String)profile.get("university");
 
         List<Map<String, Object>> jobList = (List<Map<String, Object>>) profile.get("jobs");
         arrayList.clear();
@@ -226,16 +219,18 @@ public class UserProfileActivity
         for (Map<String, Object> job : jobList) {
             HashMap<String, String> jobMap = new HashMap<>();
  //           jobMap.put("Id","JOB："+String.format("%02d",i+1));
-            jobMap.put("TaskID", (String) job.get("TaskID"));
+            jobMap.put("Task", (String) job.get("Task"));
+            jobMap.put("Create_time", (String) job.get("Create_time"));
             jobMap.put("Type", (String) job.get("Type"));
+            jobMap.put("Address", (String) job.get("Address"));
             jobMap.put("Status", (String) job.get("Status"));
             arrayList.add(jobMap);
             i=i+1;
         }
 
-        if (university != null && !university.isEmpty()) {
-            universityText.setText(university);
-        }
+//        if (university != null && !university.isEmpty()) {
+//            universityText.setText(university);
+//        }
 
         Blob imageBlob = (Blob)profile.get("imageData");
 
@@ -245,132 +240,5 @@ public class UserProfileActivity
         }
 
     }
-
-    @Override
-    public void makeData(Map<String, Object> profile) {
-
-
-//        List<Map<String, Object>> jobList = (List<Map<String, Object>>) profile.get("job");
-//        arrayList.clear();
-//        int i = 0;
-//        for (Map<String, Object> job : jobList) {
-//            HashMap<String, String> jobMap = new HashMap<>();
-//            jobMap.put("Id","JOB："+String.format("%02d",i+1));
-//            jobMap.put("TaskID", (String) job.get("TaskID"));
-//            jobMap.put("Type", (String) job.get("Type"));
-//            jobMap.put("Status", (String) job.get("Status"));
-//            arrayList.add(jobMap);
-//            i=i+1;
-//        }
-//        mRecyclerView = findViewById(R.id.recycleview);
-//        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-//        myListAdapter = new MyListAdapter();
-
-        mRecyclerView.setAdapter(myListAdapter);
-
-    }
-
-
-    //////////////////////
-    private class MyListAdapter extends RecyclerView.Adapter<MyListAdapter.ViewHolder>{
-
-        class ViewHolder extends RecyclerView.ViewHolder{
-            public TextView tvId,Task,Type,Status;
-            private View mView;
-
-            public ViewHolder(@NonNull View itemView) {
-                super(itemView);
-                tvId = itemView.findViewById(R.id.textView_Id);
-                Task = itemView.findViewById(R.id.Task_V);
-                Type = itemView.findViewById(R.id.Type_V);
-                Status  = itemView.findViewById(R.id.status_V1);
-                mView  = itemView;
-
-            }
-        }
-
-
-        @NonNull
-        @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.recycle_item,parent,false);
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-           // int avgS = Integer.parseInt(arrayList.get(position).get("Avg"));
-
-            holder.tvId.setText(arrayList.get(position).get("Id"));
-            holder.Task.setText(arrayList.get(position).get("TaskID"));
-            holder.Type.setText(arrayList.get(position).get("Type"));
-            holder.Status.setText(arrayList.get(position).get("Status"));
-
-            holder.mView.setOnClickListener((v)->{
-                Toast.makeText(getBaseContext(),holder.Status.getText(),Toast.LENGTH_SHORT).show();
-            });
-
-            MyTextWatcher watcher = new MyTextWatcher(holder);
-            watcher.setTask(arrayList.get(position).get("TaskID"));
-            watcher.setType(arrayList.get(position).get("Type"));
-            watcher.setStatus(arrayList.get(position).get("Status"));
-
-            holder.Status.addTextChangedListener(watcher);
-
-        }
-
-        @Override
-        public int getItemCount() {
-            return arrayList.size();
-        }
-    }
-
-    public class MyTextWatcher implements TextWatcher {
-        private RecyclerView.ViewHolder viewHolder;
-        private String type;
-        private String task;
-        private String status;
-
-        public MyTextWatcher(RecyclerView.ViewHolder viewHolder) {
-            this.viewHolder = viewHolder;
-        }
-
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        public void setTask(String task) {
-            this.task = task;
-        }
-
-        public void setStatus(String status) {
-            this.status = status;
-        }
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            // 監聽 EditText 的內容更改
-            String newStatus = s.toString();
-            // 更新 task 中的數據
-            Map<String, String> taskMap = arrayList.get(viewHolder.getAdapterPosition());
-            taskMap.put("Type", type);
-            taskMap.put("TaskID", task);
-            taskMap.put("Status", newStatus);
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-
-        }
-    }
-
-
 
 }

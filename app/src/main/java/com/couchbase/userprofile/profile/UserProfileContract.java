@@ -6,7 +6,7 @@ public interface UserProfileContract {
 
     interface View {
         void showProfile(Map<String, Object> profile);
-        void makeData(Map<String, Object> profile);
+
     }
 
     interface UserActionsListener {
