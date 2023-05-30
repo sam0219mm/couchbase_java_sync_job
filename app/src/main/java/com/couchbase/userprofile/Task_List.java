@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -79,6 +80,7 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
             HashMap<String, String> jobMap = new HashMap<>();
             jobMap.put("Id", (String) job.get("Id"));
             jobMap.put("Task", (String) job.get("Task"));
+            jobMap.put("Task_id", (String) job.get("Task_id"));
             jobMap.put("Create_time", (String) job.get("Create_time"));
             jobMap.put("Type", (String) job.get("Type"));
             jobMap.put("Address", (String) job.get("Address"));
@@ -91,7 +93,7 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
 
     public void onSaveTapped_task(View view) {
 
-        profile_data.remove("jobs");
+        //profile_data.remove("jobs");
         // 收集當前的 job status
         List<Map<String, String>> current_jobs = new ArrayList<>();
         ListAdapter adapter = (ListAdapter) RecyclerView_Task.getAdapter();
@@ -100,6 +102,7 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
             adapter.bindViewHolder(viewHolder, i);
             Map<String, String> task = new HashMap<>();
             task.put("Task", viewHolder.Task.getText().toString());
+            task.put("Task_id", arrayList.get(i).get("Task_id"));
             task.put("Create_time", viewHolder.Create_time.getText().toString());
             task.put("Type", viewHolder.Type.getText().toString());
             task.put("Address", viewHolder.Address.getText().toString());
@@ -170,6 +173,14 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
             holder.Type.setText(arrayList.get(position).get("Type"));
             holder.Address.setText(arrayList.get(position).get("Address"));
             holder.Status.setText(arrayList.get(position).get("Status"));
+
+            String type = arrayList.get(position).get("Type");
+            if ("urgent".equalsIgnoreCase(type)) {
+                holder.itemView.setBackgroundColor(Color.RED);
+            } else {
+                holder.itemView.setBackgroundColor(Color.parseColor("#90EE90")); //Green
+            }
+
 
             holder.mView.setOnClickListener((v)->{
                 Toast.makeText(getBaseContext(),holder.Status.getText(),Toast.LENGTH_SHORT).show();

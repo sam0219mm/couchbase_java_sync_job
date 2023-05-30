@@ -79,6 +79,7 @@ public class UserProfilePresenter implements UserProfileContract.UserActionsList
                             Dictionary jobDict = jobArray.getDictionary(i);
                             Map<String, Object> jobMap = new HashMap<>();
                             jobMap.put("Id","JOB："+String.format("%02d",i+1));
+                            jobMap.put("Task_id", jobDict.getString("Task_id"));
                             jobMap.put("Task", jobDict.getString("Task"));
                             jobMap.put("Address", jobDict.getString("Address"));
                             jobMap.put("Type", jobDict.getString("Type"));

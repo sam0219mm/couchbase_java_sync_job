@@ -220,6 +220,7 @@ public class UserProfileActivity
             HashMap<String, String> jobMap = new HashMap<>();
  //           jobMap.put("Id","JOB："+String.format("%02d",i+1));
             jobMap.put("Task", (String) job.get("Task"));
+            jobMap.put("Task_id", (String) job.get("Task_id"));
             jobMap.put("Create_time", (String) job.get("Create_time"));
             jobMap.put("Type", (String) job.get("Type"));
             jobMap.put("Address", (String) job.get("Address"));
