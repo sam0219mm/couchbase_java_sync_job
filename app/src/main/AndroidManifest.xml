@@ -19,13 +19,9 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".Task_List"
-            android:label="@string/task"
-            android:exported="false" />
-
-
+            android:exported="false"
+            android:label="@string/task" />
         <activity android:name=".universities.UniversitiesActivity" />
-
-
         <activity
             android:name=".login.LoginActivity"
             android:exported="true"
@@ -37,7 +33,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".profile.UserProfileActivity" />
     </application>
 

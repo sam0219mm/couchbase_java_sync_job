@@ -1,26 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
-    android:background="#E1DCDC"
-    android:orientation="vertical">
-
-
-    <TextView
-        android:id="@+id/textView_Id"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="10dp"
-        android:paddingTop="20dp"
-        android:paddingBottom="20dp"
-        android:text="任務編號："
-        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+    app:cardBackgroundColor="#FFFDFD"
+    app:cardCornerRadius="15dp"
+    app:cardElevation="20dp"
+    android:radius="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"></LinearLayout>
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/textView_Id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="10dp"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
+            android:text="任務編號:"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -37,7 +42,7 @@
             android:text="內容敘述："
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textColor="#000"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/Task_V"
@@ -60,13 +65,13 @@
 
         <TextView
             android:id="@+id/textView4"
-            android:layout_width="90dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
             android:text="創建時間："
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textColor="#000"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/Create_time"
@@ -90,13 +95,13 @@
 
         <TextView
             android:id="@+id/textView4"
-            android:layout_width="90dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
             android:text="緊急程度："
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textColor="#000"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/Type_V"
@@ -110,7 +115,6 @@
     </LinearLayout>
 
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -120,13 +124,13 @@
 
         <TextView
             android:id="@+id/textView4"
-            android:layout_width="90dp"
+            android:layout_width="82dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
             android:text="地點："
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textColor="#000"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/address_V"
@@ -142,43 +146,34 @@
     </LinearLayout>
 
 
-
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="10dp"
         android:orientation="horizontal">
+
 
         <TextView
             android:id="@+id/textView6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
-            android:text="任務狀態："
+            android:text="處理狀態："
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textColor="#000"
-            android:textSize="18sp" />
-
-<!--        <TextView-->
-<!--            android:id="@+id/status_V"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_weight="8"-->
-<!--            android:text="TextView"-->
-<!--            android:textAppearance="@style/TextAppearance.AppCompat.Large"-->
-<!--            android:textColor="#000"-->
-<!--            android:textSize="18sp" />-->
+            android:textSize="16sp" />
 
         <EditText
             android:id="@+id/status_V1"
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_weight="8"
             android:padding="5dp"
+            android:background="@null"
             android:textColor="#000" />
 
     </LinearLayout>
-</LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

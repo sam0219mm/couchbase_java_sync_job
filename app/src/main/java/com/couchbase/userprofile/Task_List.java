@@ -175,10 +175,11 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
             holder.Status.setText(arrayList.get(position).get("Status"));
 
             String type = arrayList.get(position).get("Type");
-            if ("urgent".equalsIgnoreCase(type)) {
-                holder.itemView.setBackgroundColor(Color.RED);
+            String status =arrayList.get(position).get("Status");
+            if ("urgent".equalsIgnoreCase(type)&& "Pending".equalsIgnoreCase(status)) {
+                holder.tvId.setTextColor(Color.RED);
             } else {
-                holder.itemView.setBackgroundColor(Color.parseColor("#90EE90")); //Green
+                holder.tvId.setTextColor(Color.BLACK);
             }
 
 

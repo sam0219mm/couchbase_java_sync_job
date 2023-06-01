@@ -59,17 +59,18 @@ public class UserProfileActivity
 
     EditText nameInput;
     EditText emailInput;
-    EditText addressInput;
+    EditText departmentInput;
+
+
+
    // TextView universityText;
     ImageView imageView;
 
-    //////////////////////////
     private Map<String, Object> profile_data = new HashMap<>();
 
     private  ArrayList<HashMap<String,String>> arrayList = new ArrayList<>();
     SwipeRefreshLayout swipeRefreshLayout;
 
-///////////////////////////////
 
     ActivityResultLauncher<Intent> mainActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -111,8 +112,7 @@ public class UserProfileActivity
 
         nameInput = findViewById(R.id.nameInput);
         emailInput = findViewById(R.id.emailInput);
-     //   addressInput = findViewById(R.id.addressInput);
-     //   universityText = findViewById(R.id.universityText);
+        departmentInput =findViewById(R.id.departmentInput);
         imageView = findViewById(R.id.imageView);
 
         mActionListener = new UserProfilePresenter(this);
@@ -175,17 +175,13 @@ public class UserProfileActivity
 //    }
 
 
-    //////
+
     public void Task_Tapped(View view) {
         Intent intent = new Intent(UserProfileActivity.this, Task_List.class);
         intent.putExtra("arrayList", arrayList);
         startActivity(intent);
 
     }
-
-
-    //////
-
 
     private byte[] getImageViewBytes() {
         byte[] imageBytes = null;
@@ -209,8 +205,7 @@ public class UserProfileActivity
         profile_data=profile;
         nameInput.setText((String)profile.get("name"));
         emailInput.setText((String)profile.get("email"));
- //       addressInput.setText((String)profile.get("address"));
-
+        departmentInput.setText((String)profile.get("department"));
 //        String university = (String)profile.get("university");
 
         List<Map<String, Object>> jobList = (List<Map<String, Object>>) profile.get("jobs");

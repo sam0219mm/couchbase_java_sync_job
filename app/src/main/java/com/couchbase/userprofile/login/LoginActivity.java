@@ -2,6 +2,7 @@ package com.couchbase.userprofile.login;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -27,8 +28,17 @@ public class LoginActivity extends AppCompatActivity {
         usernameInput = findViewById(R.id.usernameInput);
         passwordInput = findViewById(R.id.passwordInput);
 
-        //makes logging in easier for testing
+        //設定icon大小
         imageView = findViewById(R.id.imageViewLogo);
+        Drawable envelope = getResources().getDrawable(R.drawable.envelope);
+        envelope.setBounds(0,0,80,80);
+        usernameInput.setCompoundDrawables(envelope,null,null,null);
+
+        Drawable key = getResources().getDrawable(R.drawable.key);
+        key.setBounds(0,0,80,80);
+        passwordInput.setCompoundDrawables(key,null,null,null);
+
+        //makes logging in easier for testing
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

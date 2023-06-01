@@ -26,10 +26,12 @@
 
             <Button
                 android:id="@+id/button2"
-                android:layout_width="160dp"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
+                android:background="@drawable/button_sample"
                 android:onClick="onSaveTapped_task"
                 android:text="save"
+                android:textColor="#FFFFFF"
                 android:textSize="20sp" />
         </LinearLayout>
 

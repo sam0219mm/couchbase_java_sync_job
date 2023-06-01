@@ -8,4 +8,7 @@
     <string name="name">Name</string>
     <string name="country_optional">Country (optional)</string>
     <string name="task">Task List</string>
+    <string name="Email">Email Address</string>
+    <string name="departmentInput">departmentInput</string>
+
 </resources>
