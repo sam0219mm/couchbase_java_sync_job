@@ -76,6 +76,7 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
         // 將 profile 轉換為 arrayList，然後更新 RecyclerView 的數據
         List<Map<String, Object>> jobList = (List<Map<String, Object>>) profile.get("jobs");
         arrayList.clear();
+ //       int i=0;
         for (Map<String, Object> job : jobList) {
             HashMap<String, String> jobMap = new HashMap<>();
             jobMap.put("Id", (String) job.get("Id"));
@@ -86,9 +87,15 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
             jobMap.put("Address", (String) job.get("Address"));
             jobMap.put("Status", (String) job.get("Status"));
             arrayList.add(jobMap);
+
+//            ListAdapter.notifyItemChanged(i);
+ //           i++;
         }
+
         // 刷新 RecyclerView
+        RecyclerView_Task.getRecycledViewPool().clear();
         ListAdapter.notifyDataSetChanged();
+
     }
 
     public void onSaveTapped_task(View view) {
@@ -174,13 +181,21 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
             holder.Address.setText(arrayList.get(position).get("Address"));
             holder.Status.setText(arrayList.get(position).get("Status"));
 
+
             String type = arrayList.get(position).get("Type");
             String status =arrayList.get(position).get("Status");
-            if ("urgent".equalsIgnoreCase(type)&& "Pending".equalsIgnoreCase(status)) {
-                holder.tvId.setTextColor(Color.RED);
+//            if ("urgent".equalsIgnoreCase(type)&& "Pending".equalsIgnoreCase(status)) {
+//                holder.tvId.setTextColor(Color.RED);
+//            } else {
+//                holder.tvId.setTextColor(Color.BLACK);
+//            }
+
+            if ("urgent".equalsIgnoreCase(type)) {
+                holder.Type.setTextColor(Color.BLUE);
             } else {
-                holder.tvId.setTextColor(Color.BLACK);
+                holder.Type.setTextColor(Color.BLACK);
             }
+ //           holder.itemView.invalidate();
 
 
             holder.mView.setOnClickListener((v)->{
