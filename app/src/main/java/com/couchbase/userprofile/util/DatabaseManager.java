@@ -47,7 +47,7 @@ public class DatabaseManager {
 
     private static DatabaseManager instance = null;
 
-    public static String syncGatewayEndpoint = "wss://asmvqf-eo1y2-5bh.apps.cloud.couchbase.com:4984";
+    public static String syncGatewayEndpoint = "ws://192.168.11.108:4984";
 
     //wss://asmvqf-eo1y2-5bh.apps.cloud.couchbase.com:4984
     //"wss://i4wovr0vf29wgbw.apps.cloud.couchbase.com:4984"

@@ -91,11 +91,9 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
 //            ListAdapter.notifyItemChanged(i);
  //           i++;
         }
-
         // 刷新 RecyclerView
-        RecyclerView_Task.getRecycledViewPool().clear();
+//        RecyclerView_Task.getRecycledViewPool().clear();
         ListAdapter.notifyDataSetChanged();
-
     }
 
     public void onSaveTapped_task(View view) {
@@ -174,6 +172,7 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             // int avgS = Integer.parseInt(arrayList.get(position).get("Avg"));
 
+            String type = arrayList.get(position).get("Type");
             holder.tvId.setText(arrayList.get(position).get("Id"));
             holder.Task.setText(arrayList.get(position).get("Task"));
             holder.Create_time.setText(arrayList.get(position).get("Create_time"));
@@ -182,20 +181,21 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
             holder.Status.setText(arrayList.get(position).get("Status"));
 
 
-            String type = arrayList.get(position).get("Type");
-            String status =arrayList.get(position).get("Status");
+ //           String type = arrayList.get(position).get("Type");
+ //           String status =arrayList.get(position).get("Status");
 //            if ("urgent".equalsIgnoreCase(type)&& "Pending".equalsIgnoreCase(status)) {
 //                holder.tvId.setTextColor(Color.RED);
 //            } else {
 //                holder.tvId.setTextColor(Color.BLACK);
 //            }
 
+
+ //           holder.itemView.invalidate();
             if ("urgent".equalsIgnoreCase(type)) {
                 holder.Type.setTextColor(Color.BLUE);
             } else {
                 holder.Type.setTextColor(Color.BLACK);
             }
- //           holder.itemView.invalidate();
 
 
             holder.mView.setOnClickListener((v)->{
@@ -210,6 +210,8 @@ public class Task_List extends AppCompatActivity implements UserProfileContract.
             watcher.setStatus(arrayList.get(position).get("Status"));
 
             holder.Status.addTextChangedListener(watcher);
+
+
 
         }
 

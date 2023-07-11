@@ -19,6 +19,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -32,7 +33,10 @@ import com.couchbase.userprofile.universities.UniversitiesActivity;
 import com.couchbase.userprofile.util.DatabaseManager;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +51,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.annotation.NonNull;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
+import android.widget.VideoView;
 
 
 public class UserProfileActivity
@@ -60,11 +65,14 @@ public class UserProfileActivity
     EditText nameInput;
     EditText emailInput;
     EditText departmentInput;
-
+    Button button_task;
+    TextView address;
+    EditText address_v;
 
 
    // TextView universityText;
     ImageView imageView;
+    VideoView videoView;
 
     private Map<String, Object> profile_data = new HashMap<>();
 
@@ -90,6 +98,18 @@ public class UserProfileActivity
                         {
                             if (data != null) {
                                 Uri selectedImage = data.getData();
+                                ///////
+                                try {
+                                    InputStream imageStream = getContentResolver().openInputStream(selectedImage);
+                                    byte[] imageViewBytes = getBytes(imageStream);
+                                    if (imageViewBytes != null) {
+                                        profile_data.put("imageData", new com.couchbase.lite.Blob("image/jpeg", imageViewBytes));
+                                        mActionListener.saveProfile(profile_data);
+                                    }
+                                } catch (Exception e) {
+                                    // Handle exception
+                                }
+//////
                                 if (selectedImage != null) {
                                     try {
                                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
@@ -114,6 +134,10 @@ public class UserProfileActivity
         emailInput = findViewById(R.id.emailInput);
         departmentInput =findViewById(R.id.departmentInput);
         imageView = findViewById(R.id.imageView);
+        address= findViewById(R.id.Address);
+        address_v = findViewById(R.id.Address_V);
+        button_task = (Button) findViewById(R.id.button_task);
+        videoView = findViewById(R.id.videoView);
 
         mActionListener = new UserProfilePresenter(this);
 
@@ -133,6 +157,11 @@ public class UserProfileActivity
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         mainActivityResultLauncher.launch(Intent.createChooser(intent, "Select Picture"));
+//        byte[] imageViewBytes = getImageViewBytes();
+//        if (imageViewBytes != null) {
+//            profile_data.put("imageData", new com.couchbase.lite.Blob("image/jpeg", imageViewBytes));
+//            mActionListener.saveProfile(profile_data);
+//        }
     }
 
 //    public void onUniversityTapped(View view) {
@@ -148,6 +177,18 @@ public class UserProfileActivity
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+
+    private byte[] getBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+
+        int len;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        return byteBuffer.toByteArray();
     }
 
 //    public void onSaveTapped(View view) {
@@ -206,11 +247,30 @@ public class UserProfileActivity
         nameInput.setText((String)profile.get("name"));
         emailInput.setText((String)profile.get("email"));
         departmentInput.setText((String)profile.get("department"));
+
+        String address_Value = (String)profile.get("address");
+
+        if(address_Value == null ){
+            address.setVisibility(View.GONE);
+            address_v.setVisibility(View.GONE);
+        }
+        else {
+            // 如果EditText有值，則顯示TextView並將其內容設定為EditText的值
+            address.setVisibility(View.VISIBLE);
+            address_v.setVisibility(View.VISIBLE);
+            address.setText("Address:");
+            address_v.setText((String)profile.get("address"));
+
+        }
+
 //        String university = (String)profile.get("university");
+        int originalJobCount = arrayList.size();
 
         List<Map<String, Object>> jobList = (List<Map<String, Object>>) profile.get("jobs");
+       // int jobCount = jobList.size();
         arrayList.clear();
         int i = 0;
+        int activeJobCount = 0;
         for (Map<String, Object> job : jobList) {
             HashMap<String, String> jobMap = new HashMap<>();
  //           jobMap.put("Id","JOB："+String.format("%02d",i+1));
@@ -222,19 +282,55 @@ public class UserProfileActivity
             jobMap.put("Status", (String) job.get("Status"));
             arrayList.add(jobMap);
             i=i+1;
+
+            String Status = (String) job.get("Status");
+            if (!"Completed".equalsIgnoreCase(Status) && !"Done".equalsIgnoreCase(Status)) {
+                activeJobCount++;
+            }
+
         }
+
+        button_task.setText("待辦事項" + String.format("(%d)", activeJobCount));
 
 //        if (university != null && !university.isEmpty()) {
 //            universityText.setText(university);
 //        }
 
         Blob imageBlob = (Blob)profile.get("imageData");
-
         if (imageBlob != null) {
             Drawable d = Drawable.createFromStream(imageBlob.getContentStream(), "res");
             imageView.setImageDrawable(d);
         }
 
+
+
+
+        Blob VideoBlob =(Blob)profile.get("VideoData");
+        if (VideoBlob != null) {
+            try {
+                InputStream inputStream = VideoBlob.getContentStream();
+                File videoFile = createTempFileFromInputStream(inputStream); // 將 Blob 存到臨時文件中
+                // 將臨時文件的路徑設置給 VideoView
+                videoView.setVideoPath(videoFile.getAbsolutePath());
+                videoView.start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    private File createTempFileFromInputStream(InputStream inputStream) throws IOException {
+        File tempFile = File.createTempFile("video", ".mp4"); // 創建臨時文件
+        FileOutputStream outputStream = new FileOutputStream(tempFile);
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, bytesRead);
+        }
+        outputStream.close();
+        inputStream.close();
+        return tempFile;
     }
 
 }

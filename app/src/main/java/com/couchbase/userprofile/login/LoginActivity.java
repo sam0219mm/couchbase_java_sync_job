@@ -42,8 +42,8 @@ public class LoginActivity extends AppCompatActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                usernameInput.setText("demo@example.com");
-                passwordInput.setText("Pwd12345!");
+                usernameInput.setText("sam@com");
+                passwordInput.setText("password");
             }
         });
     }
