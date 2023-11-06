@@ -12,5 +12,6 @@ public interface UserProfileContract {
     interface UserActionsListener {
         void fetchProfile();
         void saveProfile(Map<String, Object> profile);
+
     }
 }

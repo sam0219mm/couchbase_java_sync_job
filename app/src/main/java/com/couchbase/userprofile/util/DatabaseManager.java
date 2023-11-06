@@ -16,6 +16,7 @@ import com.couchbase.lite.Document;
 import com.couchbase.lite.Expression;
 import com.couchbase.lite.IndexBuilder;
 import com.couchbase.lite.ListenerToken;
+import com.couchbase.lite.MaintenanceType;
 import com.couchbase.lite.Replicator;
 import com.couchbase.lite.ReplicatorActivityLevel;
 import com.couchbase.lite.ReplicatorChange;
@@ -164,9 +165,10 @@ public class DatabaseManager {
     }
 
     // tag::startPushAndPullReplicationForCurrentUser[]
-    public static void startPushAndPullReplicationForCurrentUser(String username, String password)
+    public static void startPushAndPullReplicationForCurrentUser(String username, String password, final Runnable onComplete)
     // end::startPushAndPullReplicationForCurrentUser[]
     {
+        /////////////
         URI url = null;
         try {
             url = new URI(String.format("%s/%s", syncGatewayEndpoint, userProfileDbName));
@@ -180,7 +182,7 @@ public class DatabaseManager {
         config.setContinuous(true); // <3>
 
         config.setAuthenticator(new BasicAuthenticator(username, password.toCharArray())); // <4>
-        config.setChannels(Arrays.asList("channel." + username)); // <5>
+        config.setChannels(Arrays.asList("channel." + username, "task-channel")); // <5>
         // end::replicationconfig[]
 
         // tag::replicationinit[]
@@ -192,12 +194,39 @@ public class DatabaseManager {
             @Override
             public void changed(ReplicatorChange change) {
 
-                if (change.getReplicator().getStatus().getActivityLevel().equals(ReplicatorActivityLevel.IDLE)) {
+                ReplicatorActivityLevel level = change.getReplicator().getStatus().getActivityLevel();
+                Log.i("Replication Status", "Replication Activity Level is " + level);
+
+//                if (change.getReplicator().getStatus().getActivityLevel().equals(ReplicatorActivityLevel.IDLE)) {
+//
+//                    Log.e("Replication Comp Log", "Scheduler Completed");
+//                    if (onComplete != null) {
+//                        onComplete.run();
+//                    }
+//                }
+
+                if (level.equals(ReplicatorActivityLevel.IDLE)
+                        || level.equals(ReplicatorActivityLevel.STOPPED)
+                        || level.equals(ReplicatorActivityLevel.OFFLINE)) {
+
                     Log.e("Replication Comp Log", "Scheduler Completed");
+                    if (onComplete != null) {
+                        onComplete.run();
+                    }
                 }
+
                 if (change.getReplicator().getStatus().getActivityLevel().equals(ReplicatorActivityLevel.STOPPED)
                         || change.getReplicator().getStatus().getActivityLevel().equals(ReplicatorActivityLevel.OFFLINE)) {
                     Log.e("Rep Scheduler  Log", "ReplicationTag Stopped");
+                }
+                if (level.equals(ReplicatorActivityLevel.OFFLINE)) {
+                    Log.i("Rep Scheduler  Log", "Replication is OFFLINE");
+                }
+                if (level.equals(ReplicatorActivityLevel.CONNECTING)) {
+                    Log.i("Rep Scheduler  Log", "Replication is CONNECTING");
+                }
+                if (level.equals(ReplicatorActivityLevel.BUSY)) {
+                    Log.i("Rep Scheduler  Log", "Replication is BUSY");
                 }
             }
         });
@@ -285,4 +314,45 @@ public class DatabaseManager {
 
         in.close();
     }
+
+    //get All User
+    public static List<String> getAllUserDbNames(Context context) {
+        List<String> allDbNames = new ArrayList<>();
+        File dbDir = context.getFilesDir(); // 直接获取应用的文件目录
+        if (dbDir.exists()) {
+            File[] files = dbDir.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isDirectory()) {
+                        allDbNames.add(file.getName());
+                    }
+                }
+            }
+        }
+        return allDbNames;
+    }
+
+    public static void compactUserDatabases(Context context) {
+        List<String> allUserDbNames = getAllUserDbNames(context);
+        for (String dbName : allUserDbNames) {
+            try {
+                // Create a new configuration with the directory of the user's database
+                DatabaseConfiguration config = new DatabaseConfiguration();
+                config.setDirectory(String.format("%s/%s", context.getFilesDir(), dbName));
+
+                // Open the user's database
+                Database userDb = new Database("userprofile", config);
+
+                // Perform maintenance
+                userDb.performMaintenance(MaintenanceType.COMPACT);
+
+                // Close the database
+                userDb.close();
+            } catch (CouchbaseLiteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 }

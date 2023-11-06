@@ -26,6 +26,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.couchbase.lite.Blob;
+import com.couchbase.lite.CouchbaseLiteException;
+import com.couchbase.lite.DataSource;
+import com.couchbase.lite.Database;
+import com.couchbase.lite.Expression;
+import com.couchbase.lite.MaintenanceType;
+import com.couchbase.lite.Meta;
+import com.couchbase.lite.Query;
+import com.couchbase.lite.QueryBuilder;
+import com.couchbase.lite.QueryChange;
+import com.couchbase.lite.QueryChangeListener;
+import com.couchbase.lite.Result;
+import com.couchbase.lite.ResultSet;
+import com.couchbase.lite.SelectResult;
 import com.couchbase.userprofile.R;
 import com.couchbase.userprofile.Task_List;
 import com.couchbase.userprofile.login.LoginActivity;
@@ -38,6 +51,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -129,6 +144,7 @@ public class UserProfileActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
+        Database database = DatabaseManager.getUserProfileDatabase();
 
         nameInput = findViewById(R.id.nameInput);
         emailInput = findViewById(R.id.emailInput);
@@ -137,7 +153,6 @@ public class UserProfileActivity
         address= findViewById(R.id.Address);
         address_v = findViewById(R.id.Address_V);
         button_task = (Button) findViewById(R.id.button_task);
-        videoView = findViewById(R.id.videoView);
 
         mActionListener = new UserProfilePresenter(this);
 
@@ -147,6 +162,32 @@ public class UserProfileActivity
                 mActionListener.fetchProfile();
             }
         });
+
+        // 查詢50分鐘內過期的DOCUMENT
+        Instant fiveMinutesFromNow = Instant.now().plus(50, ChronoUnit.MINUTES);
+        Query expiryQuery = QueryBuilder
+                .select(SelectResult.expression(Meta.id))
+                .from(DataSource.database(database))
+                .where(Meta.expiration.lessThan(Expression.doubleValue(fiveMinutesFromNow.toEpochMilli())));
+
+        // 查询结果改變監聽器並print
+        expiryQuery.addChangeListener(new QueryChangeListener() {
+            @Override
+            public void changed(QueryChange change) {
+                ResultSet rows = change.getResults();
+                Result row;
+                while ((row = rows.next()) != null) {
+                    System.out.println("Document ID: " + row.getString("id") + " will expire in less than 50 minutes.");
+                }
+            }
+        });
+
+        // 執行查詢
+        try {
+            expiryQuery.execute();
+        } catch (CouchbaseLiteException e) {
+            e.printStackTrace();
+        }
     }
 
     public static final int PICK_IMAGE = 1;
@@ -191,29 +232,6 @@ public class UserProfileActivity
         return byteBuffer.toByteArray();
     }
 
-//    public void onSaveTapped(View view) {
-//        // tag::userprofile[]
-//        profile_data.remove("jobs");
-//        Map<String, Object> profile = new HashMap<>();
-//        profile.put("name", nameInput.getText().toString());
-//        profile.put("email", emailInput.getText().toString());
-//        profile.put("address", addressInput.getText().toString());
-//        profile.put("university", universityText.getText().toString());
-//        profile.put("type", "user");
-//        byte[] imageViewBytes = getImageViewBytes();
-//
-//        profile.put("jobs", arrayList);
-//
-//
-//        if (imageViewBytes != null) {
-//            profile.put("imageData", new com.couchbase.lite.Blob("image/jpeg", imageViewBytes));
-//        }
-//        // end::userprofile[]
-//
-//        mActionListener.saveProfile(profile);
-//
-//        Toast.makeText(this, "Successfully updated profile!", Toast.LENGTH_SHORT).show();
-//    }
 
 
 
@@ -240,6 +258,7 @@ public class UserProfileActivity
         }
         return imageBytes;
     }
+
 
     @Override
     public void showProfile(Map<String, Object> profile) {
@@ -273,13 +292,14 @@ public class UserProfileActivity
         int activeJobCount = 0;
         for (Map<String, Object> job : jobList) {
             HashMap<String, String> jobMap = new HashMap<>();
- //           jobMap.put("Id","JOB："+String.format("%02d",i+1));
+
             jobMap.put("Task", (String) job.get("Task"));
             jobMap.put("Task_id", (String) job.get("Task_id"));
             jobMap.put("Create_time", (String) job.get("Create_time"));
-            jobMap.put("Type", (String) job.get("Type"));
+            jobMap.put("level", (String) job.get("level"));
             jobMap.put("Address", (String) job.get("Address"));
             jobMap.put("Status", (String) job.get("Status"));
+
             arrayList.add(jobMap);
             i=i+1;
 
@@ -287,7 +307,6 @@ public class UserProfileActivity
             if (!"Completed".equalsIgnoreCase(Status) && !"Done".equalsIgnoreCase(Status)) {
                 activeJobCount++;
             }
-
         }
 
         button_task.setText("待辦事項" + String.format("(%d)", activeJobCount));
@@ -301,23 +320,6 @@ public class UserProfileActivity
             Drawable d = Drawable.createFromStream(imageBlob.getContentStream(), "res");
             imageView.setImageDrawable(d);
         }
-
-
-
-
-        Blob VideoBlob =(Blob)profile.get("VideoData");
-        if (VideoBlob != null) {
-            try {
-                InputStream inputStream = VideoBlob.getContentStream();
-                File videoFile = createTempFileFromInputStream(inputStream); // 將 Blob 存到臨時文件中
-                // 將臨時文件的路徑設置給 VideoView
-                videoView.setVideoPath(videoFile.getAbsolutePath());
-                videoView.start();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
     }
 
     private File createTempFileFromInputStream(InputStream inputStream) throws IOException {
@@ -332,5 +334,4 @@ public class UserProfileActivity
         inputStream.close();
         return tempFile;
     }
-
 }

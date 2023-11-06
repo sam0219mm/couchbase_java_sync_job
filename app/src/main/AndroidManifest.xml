@@ -19,6 +19,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".Play_video"
+            android:exported="false" />
+        <activity
             android:name=".Task_List"
             android:exported="false"
             android:label="@string/task" />
